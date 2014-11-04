@@ -16,12 +16,12 @@
   var html = new Object();
 
   html.layer = function(){
-    return '<li id="'+this.id+'" class="layer"><h1>Layer '+this.id+' ('+this.name+') using '+this.source.name+' (Active: '+this.source.active+')</h1><button class="destroy-layer" data-id="'+this.id+'">Delete</button></li>';
+    return '<li id="'+this.id+'" class="layer"><h1>Layer '+this.id+' ('+this.name+')</h1><h2><span class="status '+( (this.source.active) ? 'active' : '' )+'"'+this.source.name+'<button class="destroy-layer" data-id="'+this.id+'">Delete</button></li>';
   }
   html.source = function(key){
     return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
   }
-  
+
 
   html.source_option = function(key){
     return '<li id="'+key+'" class="source-option"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'" value="'+this.default+'" /></li>';
@@ -77,6 +77,11 @@
     });
   }
 
+  function refresh_grid( grid ){
+    console.log('refreshing grid...');
+    $('section#grid').html(JSON.stringify(grid));
+  }
+
   // function refresh_mixer(){
   //   console.log('Mixer updated.');
   //   socket.emit('list layers');
@@ -92,6 +97,9 @@
 
   socket.emit('list sources');
   socket.on('refresh sources', refresh_sources);
+
+  // socket.emit('get grid');
+  socket.on('refresh grid', refresh_grid);
 
   // socket.on('mixer update', refresh_mixer);
 
