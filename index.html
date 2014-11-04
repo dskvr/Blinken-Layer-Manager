@@ -42,6 +42,7 @@
 
   function refresh_layers(layers_array){ 
   	layers = layers_array;
+    console.log('Layers Refreshed');
   	$.each(layers, function(key, value){
   		$('section#layers ul').append( html.layer.apply(this, [key]) )
   	});
@@ -62,17 +63,15 @@
   	});
   }
 
-  
-
 </script>
 </head>
 <body>
 	<header></header>
 	<nav>
 		<ul>
-			<li><a href="#" id="show-layers"></a></li>
-			<li><a href="#" id="show-sources"></a></li>
-			<li><a href="#" id="show-grid"></a></li>
+			<li><a href="#" id="show-layers">Layers</a></li>
+			<li><a href="#" id="show-sources">Sources</a></li>
+			<li><a href="#" id="show-grid">Grid</a></li>
 		</ul>
 	<main>
 		<form id="layer-create">
