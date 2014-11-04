@@ -9,7 +9,7 @@
 
   $(function(){
   	$('button#create-layer').click(create_layer);
-  	$("select#sources").change(display_source_options);
+  	$("select#sources").change(refresh_source_options);
     $('li.layer button.destroy-layer').click(destroy_layer);
   });
 
@@ -67,7 +67,8 @@
   	});
   }
 
-  function display_source_options(){ 
+  function refresh_source_options(){ 
+    $('form#source-options ul').empty();
   	var index = $('select#sources option:selected').attr('id');
   	$.each(sources[index].options, function(key, value){
   		$('form#source-options ul').append( html.source_option.apply(this, [key] ))
