@@ -64,6 +64,7 @@
     $.each(sources, function(key, value){
       $('select#sources').append(html.source.apply(value, [key]));
     });
+    refresh_source_options();
   }
 
   function refresh_source_options(){ 
