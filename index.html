@@ -1,0 +1,107 @@
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io('http://0.0.0.0:1337');
+
+  var layers, sources, grid;
+
+  socket.emit('list layers');
+  socket.on('refresh layers', refresh_layers);
+
+  socket.emit('list sources');
+  socket.on('refresh sources', refresh_sources);
+
+  $(function(){
+  	$('button#create-layer').click(create_layer);
+  	$("select#sources").change(display_source_options);
+  });
+
+  var html = new Object();
+
+  html.layer = function(key){
+  	return '<li id="'+key+'" class="layer"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'" value="'+this.default+'" /></li>';
+  }
+  html.source = function(key){
+  	return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
+  }
+
+  html.source_option = function(key){
+  	return '<li id="'+key+'" class="source-option"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'" value="'+this.default+'" /></li>';
+  }
+
+  function create_layer(event){ 
+  	event.preventDefault();
+  	var formdata = $('form#source-options').serializeObject();
+  	// var source_options = JSON.stringify(formdata);
+  	console.log(formdata)
+  	socket.emit('create layer', $('input#layer-name').val(), $('select#sources option:selected').val(), formdata); 
+  	socket.emit('mixer update');
+  }
+
+  function refresh_layers(layers_array){ 
+  	layers = layers_array;
+  	$.each(layers, function(key, value){
+  		$('section#layers ul').append( html.layer.apply(this, [key]) )
+  	});
+  	socket.emit('mixer update');
+  }
+
+  function refresh_sources( sources_array ){ 
+  	sources = sources_array;
+  	$.each(sources, function(key, value){
+  		$('select#sources').append(html.source.apply(value, [key]));
+  	});
+  }
+
+  function display_source_options(){ 
+  	var index = $('select#sources option:selected').attr('id');
+  	$.each(sources[index].options, function(key, value){
+  		$('form#source-options ul').append( html.source_option.apply(this, [key] ))
+  	});
+  }
+
+  
+
+</script>
+</head>
+<body>
+	<header></header>
+	<nav>
+		<ul>
+			<li><a href="#" id="show-layers"></a></li>
+			<li><a href="#" id="show-sources"></a></li>
+			<li><a href="#" id="show-grid"></a></li>
+		</ul>
+	<main>
+		<form id="layer-create">
+			<label for="layer-name">Layer Name</label><input id="layer-name" name="layer-name"  />
+			<select id="sources"></select>
+			<button id="create-layer">+ Layer</button>
+		</form>
+		<form id="source-options"><ul></ul></form>
+		<section id="layers"></section>
+		<section id="sources"></section>
+		<section id="grid"></section>
+	</main>
+	<script>
+	$.fn.serializeObject = function() {
+		var o = {};
+		var a = this.serializeArray();
+		$.each(a, function() {
+			if (o[this.name]) {
+				if (!o[this.name].push) {
+					o[this.name] = [o[this.name]];
+				}
+				o[this.name].push(this.value || '');
+			} else {
+				o[this.name] = this.value || '';
+			}
+		});
+		return o;
+	};
+	</script>
+	
+</body>
+</html>
