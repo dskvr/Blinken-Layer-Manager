@@ -10,7 +10,7 @@
   $(function(){
   	$('button#create-layer').click(create_layer);
   	$("select#sources").change(display_source_options);
-    $('li.layer button.delete-layer').click(destroy_layer);
+    $('li.layer button.destroy-layer').click(destroy_layer);
   });
 
   var html = new Object();
@@ -18,7 +18,7 @@
   html.layer = function(key){
     console.log(key);
     console.log(this);
-  	return '<li id="'+key+'" class="layer"><h1>Layer '+this.id+' ('+this.name+') using '+this.source.name+' (Active: '+this.source.active+')</h1><button class="delete-layer">Delete</button></li>';
+  	return '<li id="'+key+'" class="layer"><h1>Layer '+this.id+' ('+this.name+') using '+this.source.name+' (Active: '+this.source.active+')</h1><button class="destroy-layer">Delete</button></li>';
   }
   html.source = function(key){
   	return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
@@ -44,8 +44,8 @@
 
   function destroy_layer(){
     var layer_id = $(this).parents('li.layer').attr('id');
+    console.log('delete layer '+layer_id);
     socket.emit('destroy layer', layer_id);
-
   }
 
   function refresh_layers(layers_array){ 
