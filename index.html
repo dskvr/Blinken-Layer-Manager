@@ -43,6 +43,7 @@
   function refresh_layers(layers_array){ 
   	layers = layers_array;
     console.log('Layers Refreshed');
+    console.dir(layers_array);
   	$.each(layers, function(key, value){
   		$('section#layers ul').append( html.layer.apply(this, [key]) )
   	});
