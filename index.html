@@ -7,12 +7,6 @@
 
   var layers, sources, grid;
 
-  socket.emit('list layers');
-  socket.on('refresh layers', refresh_layers);
-
-  socket.emit('list sources');
-  socket.on('refresh sources', refresh_sources);
-
   $(function(){
   	$('button#create-layer').click(create_layer);
   	$("select#sources").change(display_source_options);
@@ -21,7 +15,9 @@
   var html = new Object();
 
   html.layer = function(key){
-  	return '<li id="'+key+'" class="layer"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'" value="'+this.default+'" /></li>';
+    console.log(key);
+    console.log(this);
+  	return '<li id="'+key+'" class="layer"><h1>Layer '+this.id+' ('+this.name+') using '+this.source.name+' (Active: '+this.source.active+')</h1></li>';
   }
   html.source = function(key){
   	return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
@@ -35,19 +31,25 @@
   	event.preventDefault();
   	var formdata = $('form#source-options').serializeObject();
   	// var source_options = JSON.stringify(formdata);
-  	console.log(formdata)
-  	socket.emit('create layer', $('input#layer-name').val(), $('select#sources option:selected').val(), formdata); 
-  	socket.emit('mixer update');
+  	// console.log(formdata)
+  	socket.emit('create layer', $('input#layer-name').val(), $('select#sources option:selected').val(), formdata);
+  }
+
+  function create_layer_success(layer_object){
+    console.log('Layer successfully added.');
+    console.dir(layer_object);
+    socket.emit('list layers');
   }
 
   function refresh_layers(layers_array){ 
   	layers = layers_array;
+    $('section#layers ul').empty();
+  	$.each(layers_array, function(key, value){
+      console.log(html.layer.apply(value, [key]) );
+  		$('section#layers ul').append( html.layer.apply(value, [key]) )
+  	});
     console.log('Layers Refreshed');
     console.dir(layers_array);
-  	$.each(layers, function(key, value){
-  		$('section#layers ul').append( html.layer.apply(this, [key]) )
-  	});
-  	socket.emit('mixer update');
   }
 
   function refresh_sources( sources_array ){ 
@@ -64,6 +66,28 @@
   	});
   }
 
+  // function refresh_mixer(){
+  //   console.log('Mixer updated.');
+  //   socket.emit('list layers');
+  //   socket.emit('list sources');
+  // }
+
+  function error_log(error){
+    console.log(error);
+  }
+
+  socket.emit('list layers');
+  socket.on('refresh layers', refresh_layers);
+
+  socket.emit('list sources');
+  socket.on('refresh sources', refresh_sources);
+
+  // socket.on('mixer update', refresh_mixer);
+
+  socket.on('layer created', create_layer_success);
+
+  socket.on('error', error_log);
+
 </script>
 </head>
 <body>
@@ -74,6 +98,7 @@
 			<li><a href="#" id="show-sources">Sources</a></li>
 			<li><a href="#" id="show-grid">Grid</a></li>
 		</ul>
+  </nav>
 	<main>
 		<form id="layer-create">
 			<label for="layer-name">Layer Name</label><input id="layer-name" name="layer-name"  />
@@ -81,9 +106,9 @@
 			<button id="create-layer">+ Layer</button>
 		</form>
 		<form id="source-options"><ul></ul></form>
-		<section id="layers"></section>
-		<section id="sources"></section>
-		<section id="grid"></section>
+		<section id="layers"><ul></ul></section>
+		<section id="sources"><ul></ul></section>
+		<section id="grid"><ul></ul></section>
 	</main>
 	<script>
 	$.fn.serializeObject = function() {
