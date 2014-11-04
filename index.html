@@ -69,6 +69,7 @@
 
   function refresh_source_options(){ 
     $('form#source-options ul').empty();
+    
   	var index = $('select#sources option:selected').attr('id');
   	$.each(sources[index].options, function(key, value){
   		$('form#source-options ul').append( html.source_option.apply(this, [key] ))
