@@ -3,7 +3,7 @@
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  var socket = io('http://0.0.0.0:1337');
+  var socket = io('http://localhost:1337');
 
   var layers, sources, grid;
 
@@ -16,7 +16,7 @@
   var html = new Object();
 
   html.layer = function(){
-    return '<li id="'+this.id+'" class="layer"><h1>Layer '+this.id+' ('+this.name+')</h1><h2><span class="status '+( (this.source.active) ? 'active' : '' )+'"'+this.source.name+'<button class="destroy-layer" data-id="'+this.id+'">Delete</button></li>';
+    return '<li id="'+this.id+'" class="layer"><h1>Layer '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-layer" data-id="'+this.id+'">Delete</button></li>';
   }
   html.source = function(key){
     return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
