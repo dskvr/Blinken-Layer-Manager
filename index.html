@@ -10,7 +10,7 @@
   $(function(){
   	$('button#create-layer').click(create_layer);
   	$("select#sources").change(refresh_source_options);
-    $('li.layer button.destroy-layer').live(destroy_layer);
+    // $('li.layer button.destroy-layer').live('click', destroy_layer);
   });
 
   var html = new Object();
@@ -50,8 +50,9 @@
   	layers = layers_array;
     $('section#layers ul').empty();
   	$.each(layers_array, function(key, value){
-      console.log(html.layer.apply(value);
-  		$('section#layers ul').append( html.layer.apply(value) );
+      console.log(html.layer.apply(value) );
+      var $layer = $( html.layer.apply(value) ).appendTo('section#layers ul');
+      $layer.find('button.destroy-layer').bind('click', destroy_layer);
       // $('section#layers ul').find('li#'+value.id+' button.destroy-layer').bind('click', destroy_layer);
   	});
     console.log('Layers Refreshed');
