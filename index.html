@@ -50,9 +50,9 @@
   	layers = layers_array;
     $('section#layers ul').empty();
   	$.each(layers_array, function(key, value){
-      console.log(html.layer.apply(value, [key]) );
-  		$('section#layers ul').append( html.layer.apply(value)
-      $('section#layers ul').find('li#'+key+' button.destroy-layer').bind('click', destroy_layer);
+      console.log(html.layer.apply(value);
+  		$('section#layers ul').append( html.layer.apply(value) );
+      // $('section#layers ul').find('li#'+value.id+' button.destroy-layer').bind('click', destroy_layer);
   	});
     console.log('Layers Refreshed');
     console.dir(layers_array);
