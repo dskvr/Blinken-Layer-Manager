@@ -77,9 +77,19 @@
     });
   }
 
-  function refresh_grid( grid ){
+  function refresh_grid( grid_array ){
+    grid = grid_array;
+    console.dir(grid);
     console.log('refreshing grid...');
     $('section#grid').html(JSON.stringify(grid));
+  }
+
+  function grid_dimensions(  ){
+
+  }
+
+  function draw_grid( ) {
+
   }
 
   // function refresh_mixer(){
@@ -104,6 +114,8 @@
   // socket.on('mixer update', refresh_mixer);
 
   socket.on('layer created', create_layer_success);
+
+  socket.on('grid dimensions',  grid_dimensions);
 
   socket.on('error', error_log);
 
