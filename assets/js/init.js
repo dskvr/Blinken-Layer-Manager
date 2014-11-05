@@ -1,17 +1,17 @@
  var socket = io('http://localhost:1337');
 
-  var layers, sources, grid, dimensions, $app = $('body');
+  var channels, sources, grid, dimensions, $app = $('body');
 
   $(function(){
-    $('button#create-layer').click(create_layer);
+    $('button#create-channel').click(create_channel);
     $("select#sources").change(refresh_source_options);
-    // $('li.layer button.destroy-layer').live('click', destroy_layer);
+    // $('li.channel button.destroy-channel').live('click', destroy_channel);
   });
 
   var html = new Object();
 
-  html.layer = function(key){
-    return '<li id="'+key+'" class="layer" data-source="'+this.source.name+'"><h1>Layer '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-layer" data-id="'+this.id+'">Delete</button><div data-id="'+this.id+'" class="source-options"><form class="update"><button class="update-layer" data-id="'+this.id+'">Update</button></form></div></li>';
+  html.channel = function(key){
+    return '<li id="'+key+'" class="channel" data-source="'+this.source.name+'"><h1>Channel '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-channel" data-id="'+this.id+'">Delete</button><div data-id="'+this.id+'" class="source-options"><form class="update"><button class="update-channel" data-id="'+this.id+'">Update</button></form></div></li>';
   }
   html.source = function(key){
     return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
@@ -21,8 +21,8 @@
     return '<li id="'+key+'" class="source-option"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'" value="'+this.default+'" /></li>';
   }
 
-  html.layer_option = function(key, option){
-    return '<li id="'+key+'" class="layer-option"><label for="'+key+'">'+key+'</label><input type="text" id="'+key+'" name="'+key+'" value="'+option+'" /></li>';
+  html.channel_option = function(key, option){
+    return '<li id="'+key+'" class="channel-option"><label for="'+key+'">'+key+'</label><input type="text" id="'+key+'" name="'+key+'" value="'+option+'" /></li>';
   }
 
   html.source_option_array = function(){
@@ -31,67 +31,67 @@
     });
   }
 
-  function create_layer(event){ 
+  function create_channel(event){ 
     event.preventDefault();
     var formdata = $('form#source-options').serializeObject();
     // var source_options = JSON.stringify(formdata);
     // console.log(formdata)
-    socket.emit('create layer', $('input#layer-name').val(), $('select#sources option:selected').val(), formdata);
+    socket.emit('create channel', $('input#channel-name').val(), $('select#sources option:selected').val(), formdata);
   }
 
-  function create_layer_success(layer_object){
-    console.log('Layer successfully added.');
-    console.dir(layer_object);
-    socket.emit('list layers');
+  function create_channel_success(channel_object){
+    console.log('Channel successfully added.');
+    console.dir(channel_object);
+    socket.emit('list channels');
   }
 
-  function update_layer(event){
+  function update_channel(event){
     event.preventDefault();
-    var $layer = $(this).parents('li.layer');
-    var layer = layers[$layer.attr('id')];
-    console.log('Layer Object');
-    console.dir(layer);
+    var $channel = $(this).parents('li.channel');
+    var channel = channels[$channel.attr('id')];
+    console.log('Channel Object');
+    console.dir(channel);
     console.log('-----------');
-    var layer_id = $(this).attr('data-id');
+    var channel_id = $(this).attr('data-id');
     alert('updating');
     // var source_options = {};
-    $layer.find('.source-options form li input.changed').each(function(){
+    $channel.find('.source-options form li input.changed').each(function(){
       alert('adding to object '+$(this).attr('name')+':'+$(this).val());
-      layer.source.options[$(this).attr('name')] = $(this).val();
+      channel.source.options[$(this).attr('name')] = $(this).val();
     });
-    console.log('Layers source options updated')
-    socket.emit('update layer', layer_id, layer);
+    console.log('Channels source options updated')
+    socket.emit('update channel', channel_id, channel);
   }
 
-  function update_layer_option(){ $(this).addClass('changed'); }
+  function update_channel_option(){ $(this).addClass('changed'); }
 
-  function destroy_layer(){
-    var layer_id = $(this).attr('data-id');
-    console.log('delete layer '+layer_id);
-    socket.emit('destroy layer', layer_id);
+  function destroy_channel(){
+    var channel_id = $(this).attr('data-id');
+    console.log('delete channel '+channel_id);
+    socket.emit('destroy channel', channel_id);
   }
 
-  function refresh_layers(layers_array){ 
-    layers = layers_array;
-    console.log(layers);
-    $('section#layers ul').empty();
-    $.each(layers, function(key, layer){
-      console.log(html.layer.apply(layer) );
-      var $layer = $( html.layer.apply(layer, [key]) ).appendTo('section#layers ul');
-      $layer.find('button.destroy-layer').bind('click', destroy_layer);
-      $layer.find('button.update-layer').bind('click', update_layer);
+  function refresh_channels(channels_array){ 
+    channels = channels_array;
+    console.log(channels);
+    $('section#channels ul').empty();
+    $.each(channels, function(key, channel){
+      console.log(html.channel.apply(channel) );
+      var $channel = $( html.channel.apply(channel, [key]) ).appendTo('section#channels ul');
+      $channel.find('button.destroy-channel').bind('click', destroy_channel);
+      $channel.find('button.update-channel').bind('click', update_channel);
       var source_option_html = '';
-      $.each(layer.source.options, function(key, option){
+      $.each(channel.source.options, function(key, option){
           // if( option.isArray() ) source_option_html += html.source_option_array.apply( this );
-          source_option_html += html.layer_option.apply(layer.source.options, [key, option]);
+          source_option_html += html.channel_option.apply(channel.source.options, [key, option]);
           // }
       });
-      $layer.find('.source-options form').prepend(source_option_html);
-      $layer.find('.source-options form li input').bind('change', update_layer_option);
-      // $('section#layers ul').find('li#'+value.id+' button.destroy-layer').bind('click', destroy_layer);
+      $channel.find('.source-options form').prepend(source_option_html);
+      $channel.find('.source-options form li input').bind('change', update_channel_option);
+      // $('section#channels ul').find('li#'+value.id+' button.destroy-channel').bind('click', destroy_channel);
     });
-    console.log('Layers Refreshed');
-    console.dir(layers_array);
+    console.log('Channels Refreshed');
+    console.dir(channels_array);
   }
 
   function refresh_sources( sources_array ){ 
@@ -157,7 +157,7 @@
 
   // function refresh_mixer(){
   //   console.log('Mixer updated.');
-  //   socket.emit('list layers');
+  //   socket.emit('list channels');
   //   socket.emit('list sources');
   // }
 
@@ -165,8 +165,8 @@
     console.log(error);
   }
 
-  socket.emit('list layers');
-  socket.on('refresh layers', refresh_layers);
+  socket.emit('list channels');
+  socket.on('refresh channels', refresh_channels);
 
   socket.emit('list sources');
   socket.on('refresh sources', refresh_sources);
@@ -179,6 +179,6 @@
 
   // socket.on('mixer update', refresh_mixer);
 
-  socket.on('layer created', create_layer_success);
+  socket.on('channel created', create_channel_success);
 
   socket.on('error', error_log);
