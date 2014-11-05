@@ -5,7 +5,7 @@
 <script>
   var socket = io('http://localhost:1337');
 
-  var layers, sources, grid;
+  var layers, sources, grid, dimensions;
 
   $(function(){
     $('button#create-layer').click(create_layer);
@@ -79,17 +79,44 @@
 
   function refresh_grid( grid_array ){
     grid = grid_array;
-    console.dir(grid);
-    console.log('refreshing grid...');
-    $('section#grid').html(JSON.stringify(grid));
+    // console.log('refreshing grid...');
+    // if( $('section#grid table').length == 0 ) { draw_grid(); }
+    // $.each(grid, function(key, value){ 
+      draw_grid();
+      // $('section#grid table td#'+key).css('background-color', 'rgb('+value[0]+','+value[1]+','+value[2]+')');
+    // })
+
+    // $('section#grid').html(JSON.stringify(grid));
   }
 
-  function grid_dimensions(  ){
-
+  function grid_dimensions( dim ){
+    console.dir(dim);
+    dimensions = dim;
   }
 
   function draw_grid( ) {
+    var $grid = $('#grid ul')
+    var total = grid.length;
 
+    // console.dir(dimensions);
+    var html = '<table cellspacing="15" width="100%" height="100%">';
+    var key = 0;
+   for(var x = 0; x < dimensions.width; x++){
+      html += '<tr class="row">'
+      for(var y = 0; y < dimensions.height; y++){
+        var r = grid[key][0],
+            g = grid[key][1],
+            b = grid[key][2];
+
+        html += '<td class="pixel" id="'+key+'" style="background:rgb('+r+','+g+','+b+')">&nbsp;</td>';
+
+        key++;
+
+      }
+      html += '</tr>'
+    }
+
+    $( 'section#grid' ).html( html );
   }
 
   // function refresh_mixer(){
@@ -108,6 +135,9 @@
   socket.emit('list sources');
   socket.on('refresh sources', refresh_sources);
 
+  socket.emit('get grid dimensions');
+  socket.on('grid dimensions',  grid_dimensions);
+
   // socket.emit('get grid');
   socket.on('refresh grid', refresh_grid);
 
@@ -115,11 +145,15 @@
 
   socket.on('layer created', create_layer_success);
 
-  socket.on('grid dimensions',  grid_dimensions);
+  
 
   socket.on('error', error_log);
 
 </script>
+<style>
+  body {background:#000; color:#c0c0c0;}
+
+</style>
 </head>
 <body>
   <header></header>
