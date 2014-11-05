@@ -11,7 +11,7 @@
   var html = new Object();
 
   html.layer = function(){
-    return '<li id="'+this.id+'" class="layer" data-source="'+this.source.name+'"><h1>Layer '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-layer" data-id="'+this.id+'">Delete</button><div data-id="'+this.id+'" class="source-options"><form class="update">'+html.source_option.apply( sources[value.source.name] )+'<button class="update-layer" data-id="'+value.id+'">Update</button></form></div></li>';
+    return '<li id="'+this.id+'" class="layer" data-source="'+this.source.name+'"><h1>Layer '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-layer" data-id="'+this.id+'">Delete</button><div data-id="'+this.id+'" class="source-options"><form class="update">'+html.source_option.apply( sources[this.source.name] )+'<button class="update-layer" data-id="'+this.id+'">Update</button></form></div></li>';
   }
   html.source = function(key){
     return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
