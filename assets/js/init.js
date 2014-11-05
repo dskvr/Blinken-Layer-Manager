@@ -45,7 +45,7 @@
     socket.emit('update layer', layer_id, source_options);
   }
 
-  function update_layer_option(){ $(this).add_class('changed'); }
+  function update_layer_option(){ $(this).addClass('changed'); }
 
   function destroy_layer(){
     var layer_id = $(this).attr('data-id');
