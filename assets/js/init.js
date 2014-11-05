@@ -21,10 +21,10 @@
     return '<li id="'+key+'" class="source-option"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'" value="'+this.default+'" /></li>';
   }
 
-  html.channel_option = function(key, option){
+  html.channel_option = function(key, option, type){
     console.log('THIS channel option');
     console.log(this);
-    switch(this.type){
+    switch(type){
       case "select":
         var html = "<select>";
         for(choice in this.choices){
@@ -100,7 +100,7 @@
       var source_option_html = '';
       $.each(channel.source.options, function(key, option){
           // if( option.isArray() ) source_option_html += html.source_option_array.apply( this );
-          source_option_html += html.channel_option.apply(channel.source.options, [key, option]);
+          source_option_html += html.channel_option.apply(channel.source.options, [key, option, sources[channel.source.name].options[key].type ]);
           // }
       });
       $channel.find('.source-options form').prepend(source_option_html);
