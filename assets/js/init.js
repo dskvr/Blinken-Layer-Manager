@@ -23,9 +23,6 @@
 
   html.channel_option = function(key, option){
     switch(this.type){
-      case "string":
-      case "integer":
-        return '<li id="'+key+'" class="channel-option"><label for="'+key+'">'+key+'</label><input type="text" id="'+key+'" name="'+key+'" value="'+option+'" /></li>';
       case "select":
         var html = "<select>";
         for(choice in this.choices){
@@ -33,8 +30,12 @@
         }
         html += "</select>";
         return html;
-      case "file"
+      case "file":
         return '<li id="'+key+'" class="channel-option"><label for="'+key+'">'+key+'</label><input type="file" id="'+key+'" name="'+key+'" value="'+option+'" /></li>';
+      case "string":
+      case "integer":
+      default:
+        return '<li id="'+key+'" class="channel-option"><label for="'+key+'">'+key+'</label><input type="text" id="'+key+'" name="'+key+'" value="'+option+'" /></li>';
     }
 
   }
