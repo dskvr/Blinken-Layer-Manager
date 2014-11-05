@@ -37,10 +37,15 @@
 
   function update_layer(event){
     event.preventDefault();
-    var source_options = $('li.layer#'+layer_id).find('form.update').serializeObject();
     var layer_id = $(this).attr('data-id');
+    var source_options = {};
+    $(this).parent('li.layer').find('.source-options form li input.changed').each(function(){
+      source_options[$(this).attr('name')] = $(this).value;
+    });
     socket.emit('update layer', layer_id, source_options);
   }
+
+  function update_layer_option(){ $(this).add_class('changed'); }
 
   function destroy_layer(){
     var layer_id = $(this).attr('data-id');
@@ -62,6 +67,7 @@
           source_option_html += html.source_option.apply( this );
       });
       $layer.find('.source-options form').prepend(source_option_html);
+      $layer.find('.source-options form li input').bind('change', update_layer_option);
       // $('section#layers ul').find('li#'+value.id+' button.destroy-layer').bind('click', destroy_layer);
     });
     console.log('Layers Refreshed');
