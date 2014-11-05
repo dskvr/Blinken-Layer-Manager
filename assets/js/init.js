@@ -50,6 +50,7 @@
 
   function refresh_layers(layers_array){ 
     layers = layers_array;
+    console.log(layers);
     $('section#layers ul').empty();
     $.each(layers_array, function(key, layer){
       console.log(html.layer.apply(layer) );
