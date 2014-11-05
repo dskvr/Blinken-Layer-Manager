@@ -79,6 +79,8 @@
 
   function refresh_grid( grid_array ){
     grid = grid_array;
+    // $('section#grid').html(grid_html);
+    // console.log(grid_html)
     // console.log('refreshing grid...');
     // if( $('section#grid table').length == 0 ) { draw_grid(); }
     // $.each(grid, function(key, value){ 
@@ -99,7 +101,7 @@
     var total = grid.length;
 
     // console.dir(dimensions);
-    var html = '<table cellspacing="15" width="100%" height="100%">';
+    var html = '<table cellspacing="0" width="100%" height="100%">';
     var key = 0;
    for(var x = 0; x < dimensions.width; x++){
       html += '<tr class="row">'
@@ -108,7 +110,7 @@
             g = grid[key][1],
             b = grid[key][2];
 
-        html += '<td class="pixel" id="'+key+'" style="background:rgb('+r+','+g+','+b+')">&nbsp;</td>';
+        html += '<td class="pixel" id="'+key+'" style="background:rgb('+r+','+g+','+b+')"></td>';
 
         key++;
 
@@ -145,13 +147,13 @@
 
   socket.on('layer created', create_layer_success);
 
-  
-
   socket.on('error', error_log);
 
 </script>
 <style>
   body {background:#000; color:#c0c0c0;}
+  td {height:5px;}
+  /*table {line-height:2pt;}*/
 
 </style>
 </head>
