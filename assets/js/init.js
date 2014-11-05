@@ -11,12 +11,11 @@
   var html = new Object();
 
   html.layer = function(){
-    return '<li id="'+this.id+'" class="layer"><h1>Layer '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-layer" data-id="'+this.id+'">Delete</button></li>';
+    return '<li id="'+this.id+'" class="layer" data-source="'+this.source.name+'"><h1>Layer '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-layer" data-id="'+this.id+'">Delete</button><div data-id="'+this.id+'" class="source-options"><form class="update">'+html.source_option.apply( sources[value.source.name] )+'<button class="update-layer" data-id="'+value.id+'">Update</button></form></div></li>';
   }
   html.source = function(key){
     return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
   }
-
 
   html.source_option = function(key){
     return '<li id="'+key+'" class="source-option"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'" value="'+this.default+'" /></li>';
@@ -36,6 +35,13 @@
     socket.emit('list layers');
   }
 
+  function update_layer(event){
+    event.preventDefault();
+    var source_options = $('li.layer#'+layer_id).find('form.update').serializeObject();
+    var layer_id = $(this).attr('data-id');
+    socket.emit('update layer', layer_id, source_options);
+  }
+
   function destroy_layer(){
     var layer_id = $(this).attr('data-id');
     console.log('delete layer '+layer_id);
@@ -49,6 +55,7 @@
       console.log(html.layer.apply(value) );
       var $layer = $( html.layer.apply(value) ).appendTo('section#layers ul');
       $layer.find('button.destroy-layer').bind('click', destroy_layer);
+      $layer.find('button.update-layer').bind('click', update_layer);
       // $('section#layers ul').find('li#'+value.id+' button.destroy-layer').bind('click', destroy_layer);
     });
     console.log('Layers Refreshed');
