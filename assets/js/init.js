@@ -1,6 +1,6 @@
  var socket = io('http://localhost:1337');
 
-  var layers, sources, grid, dimensions;
+  var layers, sources, grid, dimensions, $app = $('body');
 
   $(function(){
     $('button#create-layer').click(create_layer);
@@ -10,8 +10,8 @@
 
   var html = new Object();
 
-  html.layer = function(){
-    return '<li id="'+this.id+'" class="layer" data-source="'+this.source.name+'"><h1>Layer '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-layer" data-id="'+this.id+'">Delete</button><div data-id="'+this.id+'" class="source-options"><form class="update"><button class="update-layer" data-id="'+this.id+'">Update</button></form></div></li>';
+  html.layer = function(key){
+    return '<li id="'+key+'" class="layer" data-source="'+this.source.name+'"><h1>Layer '+this.id+' ('+this.name+')</h1><span class="status'+( (this.source.active) ? 'active' : '' )+'"></span><h2>'+this.source.name+'</h2><button class="destroy-layer" data-id="'+this.id+'">Delete</button><div data-id="'+this.id+'" class="source-options"><form class="update"><button class="update-layer" data-id="'+this.id+'">Update</button></form></div></li>';
   }
   html.source = function(key){
     return '<option id="'+key+'" class="source" value="'+this.name+'">'+this.name+'</option>';
@@ -19,6 +19,16 @@
 
   html.source_option = function(key){
     return '<li id="'+key+'" class="source-option"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'" value="'+this.default+'" /></li>';
+  }
+
+  html.layer_option = function(key, option){
+    return '<li id="'+key+'" class="layer-option"><label for="'+key+'">'+key+'</label><input type="text" id="'+key+'" name="'+key+'" value="'+option+'" /></li>';
+  }
+
+  html.source_option_array = function(){
+    $.each(this, function(key){
+      return '<li id="'+key+'" class="source-option"><label for="'+this.name+'">'+this.name+'</label><input type="text" id="'+this.name+'" name="'+this.name+'['+key+']" value="'+this.default+'" /></li>';
+    });
   }
 
   function create_layer(event){ 
@@ -37,12 +47,20 @@
 
   function update_layer(event){
     event.preventDefault();
+    var $layer = $(this).parents('li.layer');
+    var layer = layers[$layer.attr('id')];
+    console.log('Layer Object');
+    console.dir(layer);
+    console.log('-----------');
     var layer_id = $(this).attr('data-id');
-    var source_options = {};
-    $(this).parent('li.layer').find('.source-options form li input.changed').each(function(){
-      source_options[$(this).attr('name')] = $(this).value;
+    alert('updating');
+    // var source_options = {};
+    $layer.find('.source-options form li input.changed').each(function(){
+      alert('adding to object '+$(this).attr('name')+':'+$(this).val());
+      layer.source.options[$(this).attr('name')] = $(this).val();
     });
-    socket.emit('update layer', layer_id, source_options);
+    console.log('Layers source options updated')
+    socket.emit('update layer', layer_id, layer);
   }
 
   function update_layer_option(){ $(this).addClass('changed'); }
@@ -57,14 +75,16 @@
     layers = layers_array;
     console.log(layers);
     $('section#layers ul').empty();
-    $.each(layers_array, function(key, layer){
+    $.each(layers, function(key, layer){
       console.log(html.layer.apply(layer) );
-      var $layer = $( html.layer.apply(layer) ).appendTo('section#layers ul');
+      var $layer = $( html.layer.apply(layer, [key]) ).appendTo('section#layers ul');
       $layer.find('button.destroy-layer').bind('click', destroy_layer);
       $layer.find('button.update-layer').bind('click', update_layer);
       var source_option_html = '';
-      $.each(sources[layer.id].options, function(key, option){
-          source_option_html += html.source_option.apply( this );
+      $.each(layer.source.options, function(key, option){
+          // if( option.isArray() ) source_option_html += html.source_option_array.apply( this );
+          source_option_html += html.layer_option.apply(layer.source.options, [key, option]);
+          // }
       });
       $layer.find('.source-options form').prepend(source_option_html);
       $layer.find('.source-options form li input').bind('change', update_layer_option);
