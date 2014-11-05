@@ -100,6 +100,7 @@
       var source_option_html = '';
       $.each(channel.source.options, function(key, option){
           // if( option.isArray() ) source_option_html += html.source_option_array.apply( this );
+          console.dir(sources);
           source_option_html += html.channel_option.apply(channel.source.options, [key, option, sources[channel.source.name].options[key].type ]);
           // }
       });
