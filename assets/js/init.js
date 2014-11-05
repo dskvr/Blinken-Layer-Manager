@@ -22,6 +22,7 @@
   }
 
   html.channel_option = function(key, option){
+    console.log('THIS channel option');
     console.log(this);
     switch(this.type){
       case "select":
