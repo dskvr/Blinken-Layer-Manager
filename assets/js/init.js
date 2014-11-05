@@ -51,14 +51,14 @@
   function refresh_layers(layers_array){ 
     layers = layers_array;
     $('section#layers ul').empty();
-    $.each(layers_array, function(key, value){
-      console.log(html.layer.apply(value) );
-      var $layer = $( html.layer.apply(value) ).appendTo('section#layers ul');
+    $.each(layers_array, function(key, layer){
+      console.log(html.layer.apply(layer) );
+      var $layer = $( html.layer.apply(layer) ).appendTo('section#layers ul');
       $layer.find('button.destroy-layer').bind('click', destroy_layer);
       $layer.find('button.update-layer').bind('click', update_layer);
       var source_option_html = '';
-      $.each(sources[value.id].options, function(key, value){
-          source_option_html += html.source_option.apply( sources[value.source.name] );
+      $.each(sources[layer.id].options, function(key, option){
+          source_option_html += html.source_option.apply( this );
       });
       $layer.find('.source-options form').prepend(source_option_html);
       // $('section#layers ul').find('li#'+value.id+' button.destroy-layer').bind('click', destroy_layer);
@@ -79,7 +79,7 @@
     $('form#source-options ul').empty();
 
     var index = $('select#sources option:selected').attr('id');
-    $.each(sources[index].options, function(key, value){
+    $.each(sources[index].options, function(key, option){
       $('form#source-options ul').append( html.source_option.apply(this, [key] ))
     });
   }
