@@ -99,7 +99,7 @@
       var index = 0;
       $.each(channel.source.options, function(key, option){
           for(var t =0; t<sources.length; t++) { var type = sources[t].options[index].type; }
-          source_option_html += html.channel_option.apply(key, option, type || null);
+          source_option_html += html.channel_option(key, option, type || null);
           index++;
       });
       $channel.find('.source-options form').prepend(source_option_html);
