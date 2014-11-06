@@ -22,12 +22,13 @@
   }
 
   html.channel_option = function(key, option, type){
-    console.log('type: '+type);
+    console.log('THIS channel option');
+    console.log(this);
     switch(type){
       case "select":
         var html = "<select>";
         for(choice in this.choices){
-          html += '<option id="key" value="'+choice+'">'+choice+'</option>';
+          html += '<option value="'+choice+'">'+choice+'</option>';
         }
         html += "</select>";
         return html;
@@ -69,8 +70,10 @@
     console.dir(channel);
     console.log('-----------');
     var channel_id = $(this).attr('data-id');
+    alert('updating');
     // var source_options = {};
     $channel.find('.source-options form li input.changed').each(function(){
+      alert('adding to object '+$(this).attr('name')+':'+$(this).val());
       channel.source.options[$(this).attr('name')] = $(this).val();
     });
     console.log('Channels source options updated')
@@ -95,19 +98,18 @@
       $channel.find('button.destroy-channel').bind('click', destroy_channel);
       $channel.find('button.update-channel').bind('click', update_channel);
       var source_option_html = '';
-      var index = 0;
       $.each(channel.source.options, function(key, option){
-          for(var t=0;t<sources.length;t++) { 
-            if(sources[t].name == channel.source.name) var type = sources[t].options[index].type;  }
-          source_option_html += html.channel_option(key, option, type);
-          index++;
+          // if( option.isArray() ) source_option_html += html.source_option_array.apply( this );
+          console.dir(sources);
+          source_option_html += html.channel_option.apply(channel.source.options, [key, option, sources[channel.source.name].options[key].type ]);
+          // }
       });
       $channel.find('.source-options form').prepend(source_option_html);
       $channel.find('.source-options form li input').bind('change', update_channel_option);
       // $('section#channels ul').find('li#'+value.id+' button.destroy-channel').bind('click', destroy_channel);
     });
-    // console.log('Channels Refreshed');
-    // console.dir(channels_array);
+    console.log('Channels Refreshed');
+    console.dir(channels_array);
   }
 
   function refresh_sources( sources_array ){ 
@@ -181,11 +183,11 @@
     console.log(error);
   }
 
-  socket.emit('list sources');
-  socket.on('refresh sources', refresh_sources);
-
   socket.emit('list channels');
   socket.on('refresh channels', refresh_channels);
+
+  socket.emit('list sources');
+  socket.on('refresh sources', refresh_sources);
 
   socket.emit('get grid dimensions');
   socket.on('grid dimensions',  grid_dimensions);
