@@ -22,8 +22,6 @@
   }
 
   html.channel_option = function(key, option, type){
-    console.log('THIS channel option');
-    console.log(this);
     switch(type){
       case "select":
         var html = "<select>";
@@ -98,11 +96,11 @@
       $channel.find('button.destroy-channel').bind('click', destroy_channel);
       $channel.find('button.update-channel').bind('click', update_channel);
       var source_option_html = '';
+      var index = 0;
       $.each(channel.source.options, function(key, option){
-          // if( option.isArray() ) source_option_html += html.source_option_array.apply( this );
-          console.dir(sources);
-          source_option_html += html.channel_option.apply(channel.source.options, [key, option, sources[channel.source.name].options[key].type ]);
-          // }
+          for(var t =0; t<sources.length; t++) { var type = sources[t].options[index].type; }
+          source_option_html += html.channel_option.apply(key, option, type || null);
+          index++;
       });
       $channel.find('.source-options form').prepend(source_option_html);
       $channel.find('.source-options form li input').bind('change', update_channel_option);
