@@ -22,6 +22,7 @@
   }
 
   html.channel_option = function(key, option, type){
+    console.log('type: '+type);
     switch(type){
       case "select":
         var html = "<select>";
