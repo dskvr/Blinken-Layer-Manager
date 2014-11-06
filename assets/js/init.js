@@ -89,7 +89,7 @@
 
   function refresh_channels(channels_array){ 
     channels = channels_array;
-    console.log(channels);
+    // console.log(channels);
     $('section#channels ul').empty();
     $.each(channels, function(key, channel){
       console.log(html.channel.apply(channel) );
@@ -99,7 +99,7 @@
       var source_option_html = '';
       var index = 0;
       $.each(channel.source.options, function(key, option){
-          for(var t =0; t< channel.source.options.length; t++) { if(t == index) var type = sources[t].options[index].type; }
+          // for(var t =0; t< channel.source.options.length; t++) { if(t == index) var type = sources[t].options[index].type; }
           source_option_html += html.channel_option(key, option, type || null);
           index++;
       });
@@ -107,8 +107,8 @@
       $channel.find('.source-options form li input').bind('change', update_channel_option);
       // $('section#channels ul').find('li#'+value.id+' button.destroy-channel').bind('click', destroy_channel);
     });
-    console.log('Channels Refreshed');
-    console.dir(channels_array);
+    // console.log('Channels Refreshed');
+    // console.dir(channels_array);
   }
 
   function refresh_sources( sources_array ){ 
@@ -172,11 +172,19 @@
     $( 'section#grid' ).html( html );
   }
 
-  // function refresh_mixer(){
-  //   console.log('Mixer updated.');
-  //   socket.emit('list channels');
-  //   socket.emit('list sources');
-  // }
+  var gridIntval, refreshEvery = 2000;
+  
+  function GridStart(){
+    gridIntval = setInterval(function(){
+      socket.emit('get grid');
+    }, refreshEvery);
+  }
+
+  function GridStop(){
+    clearInterval(gridIntval);
+  }
+
+  
 
   function error_log(error){
     console.log(error);
@@ -199,3 +207,5 @@
   socket.on('channel created', create_channel_success);
 
   socket.on('error', error_log);
+
+  GridStart();
